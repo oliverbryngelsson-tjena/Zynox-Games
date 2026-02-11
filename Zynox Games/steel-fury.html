@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steel Fury: Strategic Warfare</title>
+    <style>
+        /* Import Military/Sci-Fi Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --primary: #4CAF50;
+            /* Bright Terminal Green */
+            --dark-green: #1a2e1a;
+            --bg: #050505;
+            --panel-bg: rgba(10, 15, 10, 0.95);
+            --border: #3d4d3d;
+            --accent: #ffd700;
+            /* Gold */
+            --danger: #d32f2f;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Share Tech Mono', monospace;
+            /* Tactical Font */
+            color: #aaddaa;
+            /* Light Green Text */
+            user-select: none;
+        }
+
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* HUD UI */
+        #ui-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: none;
+            z-index: 10;
+            width: calc(100% - 20px);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .panel {
+            background: rgba(5, 10, 5, 0.85);
+            padding: 10px 15px;
+            border: 1px solid var(--primary);
+            border-left: 5px solid var(--primary);
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+
+        .speedo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .speedo-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px dashed var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #000;
+            box-shadow: 0 0 5px var(--primary);
+        }
+
+        .speedo-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .speedo-unit {
+            font-size: 0.6rem;
+            color: #666;
+        }
+
+        .gear-indicator {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+            min-width: 20px;
+            text-align: center;
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        .weapon-slot {
+            display: inline-block;
+            padding: 4px 10px;
+            border: 1px solid #333;
+            font-size: 0.8rem;
+            background: #111;
+            margin-right: 5px;
+            color: #555;
+            transition: all 0.2s;
+        }
+
+        .weapon-slot.active {
+            border-color: var(--primary);
+            color: #000;
+            background: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 0 8px var(--primary);
+        }
+
+        .hp-bar-outer {
+            width: 180px;
+            height: 10px;
+            background: #111;
+            margin-top: 5px;
+            border: 1px solid #333;
+        }
+
+        #hp-bar-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #d32f2f, #f44336);
+            transition: width 0.2s;
+        }
+
+        /* --- NEW MILITARY MENU STYLES --- */
+        .overlay-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Tactical Grid Background */
+            background-color: #050505;
+            background-image:
+                linear-gradient(rgba(0, 20, 0, 0.8), rgba(0, 10, 0, 0.9)),
+                linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, .05) 25%, rgba(0, 255, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .05) 75%, rgba(0, 255, 0, .05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, .05) 25%, rgba(0, 255, 0, .05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .05) 75%, rgba(0, 255, 0, .05) 76%, transparent 77%, transparent);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .menu-panel {
+            background: rgba(10, 15, 10, 0.95);
+            padding: 40px;
+            border: 1px solid #334433;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            /* Sci-Fi Cut Corners */
+            clip-path: polygon(0 0,
+                    100% 0,
+                    100% 85%,
+                    95% 100%,
+                    0 100%,
+                    0 15%);
+        }
+
+        /* Decorative borders using pseudo elements */
+        .menu-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+
+        .menu-panel::after {
+            content: 'TOP SECRET // AUTH: OMEGA';
+            position: absolute;
+            bottom: 5px;
+            right: 20px;
+            font-size: 0.6rem;
+            color: #334433;
+            letter-spacing: 2px;
+        }
+
+        h1.military-title {
+            font-family: 'Black Ops One', cursive;
+            font-size: 3.5rem;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(180deg, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 2px solid var(--primary);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--primary);
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+            margin-top: 5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            background: rgba(0, 20, 0, 0.3);
+            border: 1px solid #2a3a2a;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .control-item {
+            color: #889988;
+            font-size: 0.9rem;
+        }
+
+        .control-item b {
+            color: var(--accent);
+            font-family: 'Black Ops One';
+            letter-spacing: 1px;
+        }
+
+        .nation-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        button.tactical-btn {
+            font-family: 'Black Ops One', cursive;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            background: linear-gradient(180deg, #2a3a2a, #1a201a);
+            color: #8f8;
+            border: 1px solid #4a6a4a;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 0 #0f150f;
+        }
+
+        button.tactical-btn:hover {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 4px 0 #2e5e2e, 0 0 15px var(--primary);
+            transform: translateY(-2px);
+        }
+
+        button.tactical-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0;
+        }
+
+        button.nation-btn {
+            background: #111;
+            border: 1px solid #333;
+            color: #666;
+            padding: 10px 20px;
+            font-family: 'Black Ops One';
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 25%);
+        }
+
+        button.nation-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+        }
+
+        button.nation-btn:hover:not(.active) {
+            border-color: #666;
+            color: #aaa;
+        }
+
+        .tech-tree {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Custom Scrollbar */
+        .tech-tree::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .tech-tree::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        .tech-tree::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        .tank-card {
+            background: rgba(20, 30, 20, 0.6);
+            padding: 10px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .tank-card:hover {
+            border-color: var(--primary);
+            background: rgba(20, 40, 20, 0.8);
+        }
+
+        .tank-card.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+            border-style: dashed;
+        }
+
+        .tank-card.active {
+            border: 2px solid var(--primary);
+            background: rgba(76, 175, 80, 0.1);
+            box-shadow: inset 0 0 15px rgba(76, 175, 80, 0.2);
+        }
+
+        #money-display {
+            color: var(--accent);
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+
+        #score-display {
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="ui-overlay" style="display: none;">
+        <div class="panel">
+            <div id="tank-display"
+                style="font-size: 0.9rem; color: var(--primary); font-weight: bold; letter-spacing: 1px;">UNIT ACTIVE
+            </div>
+            <div class="hp-bar-outer">
+                <div id="hp-bar-inner"></div>
+            </div>
+
+            <div class="speedo-container">
+                <div class="speedo-circle">
+                    <span id="speed-val" class="speedo-value">0</span>
+                    <span class="speedo-unit">KM/H</span>
+                </div>
+                <div id="gear-val" class="gear-indicator">N</div>
+                <div style="flex-grow: 1;">
+                    <div id="slot-1" class="weapon-slot active">1 MAIN</div>
+                    <div id="slot-2" class="weapon-slot">2 MG</div>
+                </div>
+            </div>
+        </div>
+        <div class="panel"
+            style="text-align: right; border-right: 5px solid var(--primary); border-left: 1px solid var(--primary);">
+            <div id="money-display">0$</div>
+            <div id="score-display">KILLS: 0</div>
+        </div>
+    </div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="overlay-screen">
+        <div class="menu-panel" style="text-align: center;">
+            <h1 class="military-title">STEEL FURY</h1>
+            <div class="subtitle">TACTICAL WARFARE SIMULATOR v2.0</div>
+
+            <div class="control-grid">
+                <div class="control-item"><b>WASD</b> MOVEMENT</div>
+                <div class="control-item"><b>MOUSE</b> AIM / FIRE</div>
+                <div class="control-item"><b>Q / 1-2</b> WEAPON SYS</div>
+                <div class="control-item"><b>SPACE</b> E-BRAKE</div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button class="tactical-btn" onclick="initAudioAndShowNation()">INITIALIZE</button>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.7rem; color: #445544;">SECURE CONNECTION ESTABLISHED</div>
+        </div>
+    </div>
+
+    <!-- NATION SELECT -->
+    <div id="nation-screen" class="overlay-screen" style="display: none;">
+        <div class="menu-panel">
+            <h2
+                style="margin-top: 0; font-family: 'Black Ops One'; font-size: 1.8rem; color: #eee; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                DEPLOYMENT SELECTION</h2>
+            <div id="menu-money"
+                style="color: var(--accent); font-size: 1.2rem; position: absolute; top: 40px; right: 40px;">Balance: 0$
+            </div>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <div class="nation-selector">
+                    <button class="nation-btn active" id="btn-USA" onclick="selectNation('USA')">USA 🇺🇸</button>
+                    <button class="nation-btn" id="btn-GER" onclick="selectNation('GER')">GERMANY 🇩🇪</button>
+                    <button class="nation-btn" id="btn-USSR" onclick="selectNation('USSR')">USSR 🇷🇺</button>
+                    <button class="nation-btn" id="btn-SWE" onclick="selectNation('SWE')">SWEDEN 🇸🇪</button>
+                </div>
+
+                <div class="tech-tree" id="tank-grid"></div>
+
+                <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <button class="tactical-btn"
+                        style="font-size: 0.9rem; padding: 10px 20px; background: #222; border-color: #444;"
+                        onclick="showStartScreen()">ABORT</button>
+                    <button class="tactical-btn" id="launch-btn" onclick="startMatch()">DEPLOY UNIT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="game-over" class="overlay-screen" style="display: none;">
+        <div class="menu-panel" style="text-align: center; border-color: var(--danger);">
+            <h1 class="military-title"
+                style="color: var(--danger); -webkit-text-fill-color: var(--danger); border-color: var(--danger);">
+                CRITICAL FAILURE</h1>
+            <p id="stats-summary" style="font-size: 1.2rem; margin: 20px 0; color: #fff;"></p>
+            <button class="tactical-btn" style="border-color: var(--danger); color: var(--danger);"
+                onclick="location.reload()">RETURN TO BASE</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        /**
+         * STEEL FURY: STRATEGIC WARFARE ENGINE
+         * English Version with Audio System
+         */
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const WORLD_SIZE = 5000;
+        let width, height;
+        let frameCount = 0;
+        let isPaused = true;
+        let isGameOver = false;
+        let screenShake = 0;
+        let player, enemies = [], bullets = [], particles = [];
+        let score = 0;
+
+        const camera = { x: 0, y: 0 };
+        const mouse = { x: 0, y: 0, worldX: 0, worldY: 0, down: false };
+        const keys = { w: false, a: false, s: false, d: false, q: false, 1: false, 2: false, ' ': false };
+
+        // --- SOUND MANAGER ---
+        const SoundManager = {
+            ctx: null,
+            currentBgmNode: null,
+            bgmGain: null,
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            playShoot(type) {
+                if (!this.ctx) return;
+                const t = this.ctx.currentTime;
+
+                if (type === 'cannon') {
+                    // Main Gun: Low freq boom + noise
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const filter = this.ctx.createBiquadFilter();
+
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(120, t);
+                    osc.frequency.exponentialRampToValueAtTime(10, t + 0.5);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(500, t);
+                    filter.frequency.linearRampToValueAtTime(100, t + 0.3);
+
+                    gain.gain.setValueAtTime(0.5, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(t);
+                    osc.stop(t + 0.6);
+
+                    // Noise burst for explosion
+                    const bufferSize = this.ctx.sampleRate * 0.5;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+                    const nGain = this.ctx.createGain();
+                    nGain.gain.setValueAtTime(0.4, t);
+                    nGain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+                    noise.connect(nGain).connect(this.ctx.destination);
+                    noise.start(t);
+
+                } else if (type === 'mg') {
+                    // Machine Gun: Sharp high freq noise
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(400, t);
+                    osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+
+                    gain.gain.setValueAtTime(0.15, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+
+                    osc.connect(gain).connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.1);
+                }
+            },
+
+            playMusic(type) {
+                if (!this.ctx) return;
+                if (this.currentBgmNode) {
+                    this.currentBgmNode.stop();
+                    this.currentBgmNode = null;
+                }
+
+                const bufferSize = this.ctx.sampleRate * 2.0; // 2 seconds loop
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+
+                if (type === 'menu') {
+                    // Dark drone
+                    for (let i = 0; i < bufferSize; i++) {
+                        const t = i / this.ctx.sampleRate;
+                        // Low sine wave mix
+                        data[i] = Math.sin(t * 100 * Math.PI) * 0.1 + Math.sin(t * 105 * Math.PI) * 0.1;
+                        // Add some crackle
+                        if (Math.random() < 0.01) data[i] += Math.random() * 0.1;
+                    }
+                } else if (type === 'battle') {
+                    // Industrial beat
+                    for (let i = 0; i < bufferSize; i++) {
+                        const t = i / this.ctx.sampleRate;
+                        // Kick drum every 0.5s
+                        let kick = 0;
+                        if (t % 0.5 < 0.1) {
+                            const kt = (t % 0.5) / 0.1;
+                            kick = Math.sin(kt * 100 * (1 - kt)) * (1 - kt);
+                        }
+                        // High hat
+                        let hat = 0;
+                        if ((t + 0.25) % 0.5 < 0.05) {
+                            hat = (Math.random() * 2 - 1) * 0.2;
+                        }
+                        data[i] = kick * 0.5 + hat * 0.2;
+                    }
+                }
+
+                const source = this.ctx.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.3; // Volume control
+
+                source.connect(gain).connect(this.ctx.destination);
+                source.start();
+                this.currentBgmNode = source;
+                this.bgmGain = gain;
+            },
+
+            stopMusic() {
+                if (this.currentBgmNode) {
+                    this.currentBgmNode.stop();
+                    this.currentBgmNode = null;
+                }
+            }
+        };
+
+        // --- NATIONS AND TANKS ---
+        const NATIONS = {
+            USA: [
+                { id: 0, name: "M24 Chaffee", type: 'light', hp: 80, speed: 6.8, cost: 0, color: '#4e5d44', unlocked: true },
+                { id: 1, name: "M4A3E8 Sherman", type: 'medium', hp: 140, speed: 5.2, cost: 500, color: '#5a6d50', unlocked: false },
+                { id: 2, name: "M26 Pershing", type: 'heavy', hp: 250, speed: 4.2, cost: 1500, color: '#3d4d38', unlocked: false },
+                { id: 3, name: "M1A2 Abrams", type: 'mbt', hp: 550, speed: 7.5, cost: 5000, color: '#7a8c70', unlocked: false }
+            ],
+            GER: [
+                { id: 0, name: "Pz.Kpfw. II", type: 'light', hp: 70, speed: 6.2, cost: 0, color: '#7d7d7d', unlocked: true },
+                { id: 1, name: "Pz.Kpfw. IV Ausf. H", type: 'medium', hp: 130, speed: 4.8, cost: 600, color: '#5f5f5f', unlocked: false },
+                { id: 2, name: "Tiger H1", type: 'heavy', hp: 320, speed: 3.8, cost: 2000, color: '#4a4a4a', unlocked: false },
+                { id: 3, name: "Leopard 2A6", type: 'mbt', hp: 500, speed: 8.0, cost: 6000, color: '#3d4d3d', unlocked: false }
+            ],
+            USSR: [
+                { id: 0, name: "BT-7", type: 'light', hp: 65, speed: 8.5, cost: 0, color: '#4a5d3d', unlocked: true },
+                { id: 1, name: "T-34-85", type: 'medium', hp: 160, speed: 5.8, cost: 550, color: '#3d4d2d', unlocked: false },
+                { id: 2, name: "IS-2 mod. 1944", type: 'heavy', hp: 350, speed: 4.0, cost: 1800, color: '#2d3d1d', unlocked: false },
+                { id: 3, name: "T-90M", type: 'mbt', hp: 580, speed: 8.2, cost: 5500, color: '#1d2d0d', unlocked: false }
+            ],
+            SWE: [
+                { id: 0, name: "Strv m/40L", type: 'light', hp: 75, speed: 6.5, cost: 0, color: '#4d5d53', unlocked: true },
+                { id: 1, name: "Strv 74", type: 'medium', hp: 135, speed: 5.0, cost: 550, color: '#4a5a4a', unlocked: false },
+                { id: 2, name: "Strv 103C", type: 'heavy', hp: 300, speed: 4.5, cost: 1800, color: '#3d4d3d', unlocked: false },
+                { id: 3, name: "Strv 122", type: 'mbt', hp: 560, speed: 7.8, cost: 5500, color: '#2d3d2d', unlocked: false }
+            ]
+        };
+
+        const WEAPONS = {
+            CANNON: { id: 1, name: "MAIN GUN", reload: 1800, dmg: 150, bSpeed: 16, bSize: 14, spray: 0, recoil: 35, isAuto: false },
+            MG: { id: 2, name: "COAXIAL MG", reload: 60, dmg: 10, bSpeed: 24, bSize: 4, spray: 0.1, recoil: 4, isAuto: true }
+        };
+
+        let money = parseInt(localStorage.getItem('sf_money_wt')) || 0;
+        let currentNation = 'USA';
+        let currentTankIdx = 0;
+        let unlockedTanks = JSON.parse(localStorage.getItem('sf_unlocked_wt')) || { USA: [0], GER: [0], USSR: [0], SWE: [0] };
+        if (!unlockedTanks.SWE) unlockedTanks.SWE = [0];
+
+        function saveGame() {
+            localStorage.setItem('sf_money_wt', money);
+            localStorage.setItem('sf_unlocked_wt', JSON.stringify(unlockedTanks));
+        }
+
+        function showStartScreen() {
+            SoundManager.stopMusic();
+            document.querySelectorAll('.overlay-screen').forEach(s => s.style.display = 'none');
+            document.getElementById('start-screen').style.display = 'flex';
+        }
+
+        function initAudioAndShowNation() {
+            SoundManager.init();
+            SoundManager.playMusic('menu');
+            showNationSelect();
+        }
+
+        function showNationSelect() {
+            document.querySelectorAll('.overlay-screen').forEach(s => s.style.display = 'none');
+            document.getElementById('nation-screen').style.display = 'flex';
+            updateTechTree();
+        }
+
+        function selectNation(nat) {
+            currentNation = nat;
+            currentTankIdx = 0;
+            document.querySelectorAll('.nation-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + nat).classList.add('active');
+            updateTechTree();
+        }
+
+        function updateTechTree() {
+            const grid = document.getElementById('tank-grid');
+            grid.innerHTML = '';
+            document.getElementById('menu-money').innerText = `Balance: ${money}$`;
+
+            NATIONS[currentNation].forEach((tank, idx) => {
+                const isUnlocked = unlockedTanks[currentNation].includes(tank.id);
+                const canAfford = money >= tank.cost;
+                const card = document.createElement('div');
+                card.className = `tank-card ${!isUnlocked ? 'locked' : ''} ${currentTankIdx === idx ? 'active' : ''}`;
+
+                card.innerHTML = `
+            <div style="font-size: 0.6rem; color: #888; font-weight:bold;">${tank.type.toUpperCase()}</div>
+            <div style="font-weight: bold; margin: 3px 0; color: #fff; font-size: 0.9rem; font-family: 'Share Tech Mono';">${tank.name}</div>
+            <div style="font-size: 0.7rem; color:#aaa;">HP: ${tank.hp} | SPD: ${Math.round(tank.speed * 10)}</div>
+            <div style="margin-top: 8px; font-weight: bold; font-size: 0.8rem; color: ${isUnlocked ? 'var(--primary)' : (canAfford ? 'var(--accent)' : '#f44336')}">
+                ${isUnlocked ? 'ACCESS GRANTED' : tank.cost + '$'}
+            </div>
+        `;
+
+                card.onclick = () => {
+                    if (isUnlocked) {
+                        currentTankIdx = idx;
+                        updateTechTree();
+                    } else if (canAfford) {
+                        money -= tank.cost;
+                        unlockedTanks[currentNation].push(tank.id);
+                        currentTankIdx = idx;
+                        saveGame();
+                        updateTechTree();
+                    }
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function startMatch() {
+            SoundManager.playMusic('battle');
+            document.getElementById('nation-screen').style.display = 'none';
+            document.getElementById('ui-overlay').style.display = 'flex';
+            const stats = NATIONS[currentNation][currentTankIdx];
+            player = new Player(WORLD_SIZE / 2, WORLD_SIZE / 2, stats, currentNation);
+            document.getElementById('tank-display').innerText = `${stats.name.toUpperCase()}`;
+            isPaused = false;
+            createAsphaltTexture();
+        }
+
+        // --- VISUAL EFFECTS ---
+
+        class Particle {
+            constructor(x, y, color, size, vx, vy, life, fade = true) {
+                this.x = x; this.y = y; this.color = color; this.size = size;
+                this.vx = vx; this.vy = vy; this.life = life; this.maxLife = life; this.fade = fade;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.vx *= 0.96; this.vy *= 0.96;
+                this.life--;
+            }
+            draw() {
+                ctx.save();
+                if (this.fade) ctx.globalAlpha = this.life / this.maxLife;
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class MuzzleFlash {
+            constructor(x, y, angle, size) {
+                this.x = x; this.y = y; this.angle = angle; this.size = size; this.life = 5;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 2);
+                grad.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
+                grad.addColorStop(0.5, 'rgba(255, 150, 0, 0.4)');
+                grad.addColorStop(1, 'rgba(255, 50, 0, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size * 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+                this.life--;
+            }
+        }
+
+        let flashes = [];
+
+        class Bullet {
+            constructor(x, y, angle, weapon, owner) {
+                this.x = x; this.y = y;
+                this.angle = angle + (Math.random() - 0.5) * weapon.spray;
+                this.speed = weapon.bSpeed;
+                this.dmg = weapon.dmg;
+                this.size = weapon.bSize;
+                this.owner = owner;
+                this.isMg = weapon.id === 2;
+                this.life = 150;
+            }
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                if (!this.isMg && frameCount % 2 === 0) {
+                    particles.push(new Particle(this.x, this.y, 'rgba(200,200,200,0.3)', 3, 0, 0, 20));
+                }
+                return --this.life > 0;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                if (this.isMg) {
+                    ctx.fillStyle = '#ffcc00';
+                    ctx.fillRect(-this.size, -1.5, this.size * 2, 3);
+                } else {
+                    ctx.fillStyle = '#ff6600';
+                    ctx.shadowBlur = 20; ctx.shadowColor = 'orange';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, this.size, this.size / 2.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        // --- TANK LOGIC ---
+
+        class Tank {
+            constructor(x, y, stats, nation) {
+                this.x = x; this.y = y;
+                this.color = stats.color || '#555';
+                this.stats = stats;
+                this.nation = nation;
+                this.angle = 0;
+                this.turretAngle = 0;
+                this.speed = 0;
+                this.hp = stats.hp;
+                this.maxHp = stats.hp;
+                this.recoil = 0;
+                this.lastShot = 0;
+                this.activeWeapon = WEAPONS.CANNON;
+
+                const scale = 1.35;
+                this.hullW = (stats.type === 'heavy' || stats.type === 'mbt' ? 64 : (stats.type === 'light' ? 44 : 54)) * scale;
+                this.hullH = (stats.type === 'heavy' || stats.type === 'mbt' ? 88 : (stats.type === 'light' ? 62 : 76)) * scale;
+                this.turretSize = this.hullW * 0.7;
+            }
+
+            drawFlag(ctx, x, y, size) {
+                const w = size;
+                const h = size * 0.6;
+
+                ctx.save();
+                ctx.translate(x, y);
+
+                // Border
+                ctx.fillStyle = '#000';
+                ctx.fillRect(-w / 2 - 1, -h / 2 - 1, w + 2, h + 2);
+
+                // Background
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(-w / 2, -h / 2, w, h);
+
+                if (this.nation === 'USA') {
+                    ctx.fillStyle = '#b22234';
+                    for (let i = 0; i < 7; i++) ctx.fillRect(-w / 2, -h / 2 + (i * (h / 7)), w, h / 14);
+                    ctx.fillStyle = '#3c3b6e';
+                    ctx.fillRect(-w / 2, -h / 2, w * 0.4, h * 0.5);
+                }
+                else if (this.nation === 'GER') {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(-w / 2, -h / 2, w, h / 3);
+                    ctx.fillStyle = '#dd0000';
+                    ctx.fillRect(-w / 2, -h / 2 + h / 3, w, h / 3);
+                    ctx.fillStyle = '#ffce00';
+                    ctx.fillRect(-w / 2, -h / 2 + 2 * h / 3, w, h / 3);
+                }
+                else if (this.nation === 'USSR') {
+                    ctx.fillStyle = '#cd0000';
+                    ctx.fillRect(-w / 2, -h / 2, w, h);
+                    ctx.fillStyle = '#ffd700';
+                    ctx.beginPath(); ctx.arc(0, -2, h / 4, 0, Math.PI * 2); ctx.fill();
+                }
+                else if (this.nation === 'SWE') {
+                    ctx.fillStyle = '#006aa7';
+                    ctx.fillRect(-w / 2, -h / 2, w, h);
+                    ctx.fillStyle = '#fecc00';
+                    ctx.fillRect(-w / 2 + w * 0.3, -h / 2, w * 0.15, h);
+                    ctx.fillRect(-w / 2, -h / 2 + h * 0.4, w, h * 0.2);
+                }
+
+                ctx.restore();
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                const barW = this.hullW;
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(-barW / 2, -this.hullH / 2 - 35, barW, 4);
+                ctx.fillStyle = (this === player) ? '#4CAF50' : '#ff4444';
+                ctx.fillRect(-barW / 2, -this.hullH / 2 - 35, (this.hp / this.maxHp) * barW, 4);
+
+                ctx.save();
+                ctx.rotate(this.angle);
+
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetY = 5;
+
+                ctx.fillStyle = '#111';
+                const trackW = this.hullW * 0.22;
+                ctx.fillRect(-this.hullW / 2 - 4, -this.hullH / 2, trackW, this.hullH);
+                ctx.fillRect(this.hullW / 2 - trackW + 4, -this.hullH / 2, trackW, this.hullH);
+
+                ctx.fillStyle = '#222';
+                for (let i = 0; i < 8; i++) {
+                    const ty = -this.hullH / 2 + (i * (this.hullH / 7));
+                    ctx.fillRect(-this.hullW / 2 - 4, ty, trackW, 4);
+                    ctx.fillRect(this.hullW / 2 - trackW + 4, ty, trackW, 4);
+                }
+
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.roundRect(-this.hullW / 2, -this.hullH / 2, this.hullW, this.hullH, 6);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.fillRect(-this.hullW / 2.5, -this.hullH / 2.2, this.hullW / 1.25, 10);
+                ctx.fillRect(-this.hullW / 2.5, this.hullH / 4, this.hullW / 1.25, 15);
+
+                // Draw Flag on rear
+                this.drawFlag(ctx, 0, this.hullH / 2 - 10, 20);
+
+                ctx.restore();
+
+                ctx.save();
+                ctx.rotate(this.turretAngle);
+
+                const rx = -this.recoil; this.recoil *= 0.82;
+                ctx.fillStyle = '#151515';
+                const barrelL = this.activeWeapon.id === 1 ? this.hullH * 0.95 : this.hullH * 0.7;
+                const barrelW = this.activeWeapon.id === 1 ? 12 : 5;
+
+                ctx.fillRect(15 + rx, -barrelW / 2, barrelL, barrelW);
+
+                if (this.activeWeapon.id === 1) {
+                    ctx.fillStyle = '#222';
+                    ctx.fillRect(15 + rx + barrelL - 5, -barrelW - 2, 10, barrelW * 2 + 4);
+                }
+
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = '#000';
+                ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.5)';
+
+                ctx.beginPath();
+                if (this.stats.type === 'heavy' || this.stats.type === 'mbt') {
+                    ctx.moveTo(-this.turretSize / 2 - 10, -this.turretSize / 2);
+                    ctx.lineTo(this.turretSize / 2, -this.turretSize / 2 + 10);
+                    ctx.lineTo(this.turretSize / 2, this.turretSize / 2 - 10);
+                    ctx.lineTo(-this.turretSize / 2 - 10, this.turretSize / 2);
+                    ctx.closePath();
+                } else {
+                    ctx.arc(0, 0, this.turretSize / 2, 0, Math.PI * 2);
+                }
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.restore();
+                ctx.restore();
+            }
+
+            shoot(isPlayer) {
+                const now = Date.now();
+                if (now - this.lastShot > this.activeWeapon.reload) {
+
+                    // SFX Trigger
+                    if (isPlayer) {
+                        SoundManager.playShoot(this.activeWeapon.id === 1 ? 'cannon' : 'mg');
+                    } else if (Math.hypot(player.x - this.x, player.y - this.y) < 1000) {
+                        // Play simplified SFX for nearby enemies
+                        SoundManager.playShoot(this.activeWeapon.id === 1 ? 'cannon' : 'mg');
+                    }
+
+                    const muzzleX = this.x + Math.cos(this.turretAngle) * 90;
+                    const muzzleY = this.y + Math.sin(this.turretAngle) * 90;
+
+                    bullets.push(new Bullet(muzzleX, muzzleY, this.turretAngle, this.activeWeapon, isPlayer ? 'player' : 'enemy'));
+                    flashes.push(new MuzzleFlash(muzzleX, muzzleY, this.turretAngle, this.activeWeapon.id === 1 ? 25 : 10));
+
+                    this.recoil = this.activeWeapon.recoil;
+                    this.lastShot = now;
+                    if (isPlayer) screenShake = this.activeWeapon.recoil * 0.6;
+
+                    const pCount = this.activeWeapon.id === 1 ? 15 : 5;
+                    for (let i = 0; i < pCount; i++) {
+                        const spd = Math.random() * 6;
+                        particles.push(new Particle(muzzleX, muzzleY, '#555', Math.random() * 6, Math.cos(this.turretAngle + (Math.random() - 0.5)) * spd, Math.sin(this.turretAngle + (Math.random() - 0.5)) * spd, 40));
+                    }
+                }
+            }
+        }
+
+        class Player extends Tank {
+            constructor(x, y, stats, nation) {
+                super(x, y, stats, nation);
+                this.maxSpeed = stats.speed;
+                this.kmh = 0;
+            }
+            update() {
+                if (keys.w) this.speed = Math.min(this.speed + 0.12, this.maxSpeed);
+                else if (keys.s) this.speed = Math.max(this.speed - 0.08, -this.maxSpeed / 2);
+                else this.speed *= 0.96;
+
+                if (keys[' ']) this.speed *= 0.85;
+
+                if (keys.a) this.angle -= 0.035;
+                if (keys.d) this.angle += 0.035;
+
+                if (keys.q || keys['1']) this.setWeapon(WEAPONS.CANNON);
+                if (keys['2']) this.setWeapon(WEAPONS.MG);
+
+                this.x += Math.cos(this.angle - Math.PI / 2) * this.speed;
+                this.y += Math.sin(this.angle - Math.PI / 2) * this.speed;
+
+                this.x = Math.max(80, Math.min(WORLD_SIZE - 80, this.x));
+                this.y = Math.max(80, Math.min(WORLD_SIZE - 80, this.y));
+
+                this.turretAngle = Math.atan2(mouse.worldY - this.y, mouse.worldX - this.x);
+
+                if (mouse.down && this.activeWeapon.isAuto) this.shoot(true);
+
+                this.kmh = Math.abs(Math.round(this.speed * 12));
+                document.getElementById('speed-val').innerText = this.kmh;
+
+                let gear = "N";
+                if (this.speed > 0.1) gear = "D";
+                else if (this.speed < -0.1) gear = "R";
+                document.getElementById('gear-val').innerText = gear;
+            }
+            setWeapon(w) {
+                this.activeWeapon = w;
+                document.getElementById('slot-1').classList.toggle('active', w.id === 1);
+                document.getElementById('slot-2').classList.toggle('active', w.id === 2);
+            }
+        }
+
+        class Enemy extends Tank {
+            constructor(x, y, diff) {
+                const nations = ['USA', 'GER', 'USSR', 'SWE'];
+                const nat = nations[Math.floor(Math.random() * 4)];
+                const pool = NATIONS[nat].filter(t => t.cost <= diff * 1200);
+                const stats = pool[pool.length - 1] || NATIONS[nat][0];
+                super(x, y, stats, nat);
+                this.maxSpeed = stats.speed * 0.75;
+                this.targetDist = 300 + Math.random() * 200; // Distance to maintain
+            }
+            update() {
+                if (!player) return;
+
+                const dist = Math.hypot(player.x - this.x, player.y - this.y);
+                const angleToPlayer = Math.atan2(player.y - this.y, player.x - this.x);
+
+                // Aim turret at player
+                this.turretAngle = lerpAngle(this.turretAngle, angleToPlayer, 0.05);
+
+                // CHASE LOGIC
+                if (dist > this.targetDist) {
+                    const desiredHullAngle = angleToPlayer + Math.PI / 2;
+                    this.angle = lerpAngle(this.angle, desiredHullAngle, 0.04);
+                    const angleDiff = Math.abs(normalizeAngle(this.angle - desiredHullAngle));
+                    if (angleDiff < 0.5) {
+                        this.speed = Math.min(this.speed + 0.1, this.maxSpeed);
+                    } else {
+                        this.speed *= 0.95;
+                    }
+                } else {
+                    this.speed *= 0.9;
+                    this.angle += (Math.random() - 0.5) * 0.01;
+                }
+
+                this.x += Math.cos(this.angle - Math.PI / 2) * this.speed;
+                this.y += Math.sin(this.angle - Math.PI / 2) * this.speed;
+
+                const turretDiff = Math.abs(normalizeAngle(this.turretAngle - angleToPlayer));
+                if (dist < 1200 && turretDiff < 0.15) {
+                    this.shoot(false);
+                }
+            }
+        }
+
+        // --- CORE ENGINE ---
+
+        function normalizeAngle(a) {
+            while (a < -Math.PI) a += Math.PI * 2;
+            while (a > Math.PI) a -= Math.PI * 2;
+            return a;
+        }
+
+        function lerpAngle(a, b, t) {
+            let d = b - a;
+            while (d < -Math.PI) d += Math.PI * 2;
+            while (d > Math.PI) d -= Math.PI * 2;
+            return a + d * t;
+        }
+
+        let asphaltPattern;
+        function createAsphaltTexture() {
+            const p = document.createElement('canvas');
+            p.width = 1024; p.height = 1024;
+            const px = p.getContext('2d');
+            px.fillStyle = '#1c1c1c';
+            px.fillRect(0, 0, 1024, 1024);
+            for (let i = 0; i < 60000; i++) {
+                px.fillStyle = `rgba(255,255,255,${Math.random() * 0.04})`;
+                px.fillRect(Math.random() * 1024, Math.random() * 1024, 1.5, 1.5);
+            }
+            asphaltPattern = ctx.createPattern(p, 'repeat');
+        }
+
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+        window.dispatchEvent(new Event('resize'));
+
+        window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+        window.addEventListener('mousemove', e => {
+            mouse.x = e.clientX; mouse.y = e.clientY;
+            mouse.worldX = mouse.x + camera.x;
+            mouse.worldY = mouse.y + camera.y;
+        });
+        window.addEventListener('mousedown', () => {
+            mouse.down = true;
+            if (!isPaused && !isGameOver && !player.activeWeapon.isAuto) player.shoot(true);
+        });
+        window.addEventListener('mouseup', () => { mouse.down = false; });
+
+        function loop() {
+            if (isPaused) { requestAnimationFrame(loop); return; }
+
+            frameCount++;
+            camera.x = player.x - width / 2;
+            camera.y = player.y - height / 2;
+            mouse.worldX = mouse.x + camera.x;
+            mouse.worldY = mouse.y + camera.y;
+
+            ctx.save();
+            if (screenShake > 0) {
+                ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+                screenShake *= 0.92;
+            }
+            ctx.translate(-camera.x, -camera.y);
+
+            ctx.fillStyle = asphaltPattern;
+            ctx.fillRect(camera.x, camera.y, width, height);
+
+            ctx.strokeStyle = '#252525'; ctx.lineWidth = 20;
+            ctx.strokeRect(0, 0, WORLD_SIZE, WORLD_SIZE);
+
+            if (!isGameOver) {
+                player.update();
+                player.draw();
+                document.getElementById('hp-bar-inner').style.width = (player.hp / player.maxHp) * 100 + "%";
+                if (player.hp <= 0) {
+                    isGameOver = true;
+                    SoundManager.stopMusic();
+                    document.getElementById('game-over').style.display = 'flex';
+                    document.getElementById('stats-summary').innerText = `TOTAL KILLS: ${score} | EARNINGS: ${score * 150}$`;
+                    money += score * 150;
+                    saveGame();
+                }
+            }
+
+            enemies.forEach(e => { e.update(); e.draw(); });
+
+            bullets = bullets.filter(b => {
+                const active = b.update();
+                b.draw();
+
+                if (b.owner === 'player') {
+                    for (let i = enemies.length - 1; i >= 0; i--) {
+                        const e = enemies[i];
+                        if (Math.hypot(b.x - e.x, b.y - e.y) < e.hullW / 1.8) {
+                            e.hp -= b.dmg;
+                            for (let k = 0; k < 5; k++) particles.push(new Particle(b.x, b.y, '#ffff00', 2, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8, 15));
+                            if (e.hp <= 0) {
+                                score++;
+                                document.getElementById('score-display').innerText = `KILLS: ${score}`;
+                                document.getElementById('money-display').innerText = `${money + score * 150}$`;
+                                for (let k = 0; k < 30; k++) particles.push(new Particle(e.x, e.y, '#ff4400', Math.random() * 8, (Math.random() - 0.5) * 12, (Math.random() - 0.5) * 12, 50));
+                                enemies.splice(i, 1);
+                            }
+                            return false;
+                        }
+                    }
+                } else {
+                    if (Math.hypot(b.x - player.x, b.y - player.y) < player.hullW / 2) {
+                        player.hp -= b.dmg;
+                        screenShake = 15;
+                        for (let k = 0; k < 5; k++) particles.push(new Particle(b.x, b.y, '#ff0000', 2, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8, 15));
+                        return false;
+                    }
+                }
+                return active;
+            });
+
+            flashes = flashes.filter(f => { f.draw(); return f.life > 0; });
+            particles = particles.filter(p => { p.update(); p.draw(); return p.life > 0; });
+
+            ctx.restore();
+
+            if (frameCount % 180 === 0 && enemies.length < 12) {
+                const ang = Math.random() * Math.PI * 2;
+                const spawnX = player.x + Math.cos(ang) * 1100;
+                const spawnY = player.y + Math.sin(ang) * 1100;
+                if (spawnX > 100 && spawnX < WORLD_SIZE - 100 && spawnY > 100 && spawnY < WORLD_SIZE - 100) {
+                    enemies.push(new Enemy(spawnX, spawnY, Math.floor(score / 2.5)));
+                }
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+
+</html>

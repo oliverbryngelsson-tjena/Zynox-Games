@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZYNOX - Best Unblocked Games</title>
+    <style>
+        /* --- 1. GRUNDINSTÄLLNINGAR & FÄRGER --- */
+        :root {
+            --bg-body: #0f0f13;
+            --bg-sidebar: #0a0a0c;
+            --bg-card: #1a1a24;
+            --accent-color: #6c5ce7;
+            --accent-hover: #5b4bc4;
+            --mario-red: #ff3333;
+            --basket-yellow: #f1c40f;
+            /* Ny färg för featured */
+            --text-main: #ffffff;
+            --text-muted: #888899;
+            --error-color: #ff4757;
+            --success-color: #2ed573;
+            --sidebar-width: 260px;
+            --bottom-nav-height: 65px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- 2. ANNONS-RUTOR --- */
+        .ad-placeholder {
+            background: #111;
+            border: 2px dashed #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-weight: 800;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .ad-banner {
+            width: 100%;
+            height: 90px;
+            margin-bottom: 30px;
+        }
+
+        .ad-sidebar-bottom {
+            width: 100%;
+            height: 200px;
+            margin-top: auto;
+            border-color: #222;
+        }
+
+        .ad-card-style {
+            background: #111;
+            border: 2px dashed #333;
+            border-radius: 18px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            font-weight: bold;
+        }
+
+        .ad-side-rectangle {
+            width: 100%;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        /* --- 3. LOADING SCREEN --- */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050507;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+
+        .loader-logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        .loader-bar-bg {
+            width: 250px;
+            height: 4px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-bar {
+            width: 100%;
+            height: 100%;
+            background: var(--accent-color);
+            position: absolute;
+            left: -100%;
+            animation: loadingAnim 1.5s infinite ease-in-out;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        @keyframes loadingAnim {
+            0% {
+                left: -100%;
+            }
+
+            50% {
+                left: 0;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes pulseLogo {
+
+            0%,
+            100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        body.loading {
+            overflow: hidden;
+        }
+
+        /* --- 4. SIDEBAR (PC) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 35px 30px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-container {
+            margin-bottom: 50px;
+            cursor: pointer;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6c5ce7, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            opacity: 0.7;
+        }
+
+        .credits {
+            font-size: 0.55rem;
+            color: #555;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+            opacity: 0.6;
+        }
+
+        .menu-category {
+            font-size: 0.75rem;
+            color: #555;
+            font-weight: 800;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(108, 92, 231, 0.1);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .icon {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        /* --- 5. MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 40px 60px;
+            padding-bottom: 100px;
+            position: relative;
+        }
+
+        #home-view {
+            display: block;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        #game-view {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- 6. TOP BAR --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 20px 14px 50px;
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.15);
+            background: rgba(26, 26, 36, 1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            font-size: 1.1rem;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .contact-btn {
+            position: relative;
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .contact-btn:hover {
+            background: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 20px 6px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .user-profile:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: #2a2a35;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #aaa;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .user-profile.logged-in .user-avatar {
+            background-color: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(108, 92, 231, 0.4);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .user-status {
+            font-size: 0.7rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* XP STYLES */
+        .xp-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 4px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .user-profile.logged-in .xp-container {
+            display: block;
+        }
+
+        .xp-bar {
+            width: 0%;
+            height: 100%;
+            background: #2ed573;
+            box-shadow: 0 0 8px #2ed573;
+            transition: width 0.5s ease;
+        }
+
+        .level-badge {
+            font-size: 0.65rem;
+            color: #2ed573;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 2px;
+            display: none;
+        }
+
+        .user-profile.logged-in .level-badge {
+            display: block;
+        }
+
+        /* --- 7. HERO BANNER (Basket Random Featured) --- */
+        .hero-banner {
+            /* BASKET RANDOM THEME */
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0.2) 100%), url('basketrandom.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 24px;
+            padding: 60px;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(241, 196, 15, 0.2);
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff, #ffeaa7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content p {
+            color: #ddd;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+            line-height: 1.6;
+        }
+
+        .hero-badge {
+            background: var(--basket-yellow);
+            color: #000;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.4);
+        }
+
+        .hero-play-btn {
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: inline-block;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(241, 196, 15, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-play-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(241, 196, 15, 0.5);
+        }
+
+        /* --- 8. CARDS & GRID --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .see-all {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: block;
+            text-decoration: none;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(108, 92, 231, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-image {
+            height: 160px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .card-content {
+            padding: 18px;
+        }
+
+        .game-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .play-tag {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .game-card:hover .play-tag {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .favorite-star {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.4);
+            transition: 0.2s;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+        }
+
+        .favorite-star:hover {
+            transform: scale(1.1);
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .game-card.favorited .favorite-star {
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            opacity: 1;
+        }
+
+        .dev-badge {
+            color: #ccc;
+            font-size: 0.7rem;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .dev-highlight {
+            color: var(--success-color);
+        }
+
+        /* --- 9. MODALS --- */
+        .modal-overlay,
+        .auth-modal,
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active,
+        .auth-modal.active,
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content,
+        .auth-box,
+        .box {
+            background: linear-gradient(145deg, #1a1a24, #121219);
+            padding: 50px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 480px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(-30px);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-content,
+        .auth-modal.active .auth-box,
+        .modal.active .box {
+            transform: translateY(0);
+        }
+
+        .close-btn,
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #666;
+            transition: 0.2s;
+        }
+
+        .close-btn:hover,
+        .close:hover {
+            color: #fff;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: white;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            color: #aaa;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .modal-email {
+            display: inline-block;
+            padding: 15px 35px;
+            background: var(--accent-gradient);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-email:hover {
+            transform: translateY(-3px);
+        }
+
+        .auth-header h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .auth-tab {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 700;
+            padding-bottom: 5px;
+            transition: 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .auth-tab.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 14px 20px;
+            margin: 10px 0 5px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .input-hint {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 15px;
+            display: block;
+            text-align: left;
+            margin-left: 5px;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auth-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .status,
+        .status-msg {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .status.err,
+        .status-error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        .status.succ,
+        .status-success {
+            color: #1dd1a1;
+            background: rgba(29, 209, 161, 0.1);
+            border: 1px solid rgba(29, 209, 161, 0.2);
+        }
+
+        /* --- 10. GAME PLAYER (PC) --- */
+        .game-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+
+        .game-col {
+            flex: 3;
+        }
+
+        .side-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-container {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px 25px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .fs-btn {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .fs-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .ad-box {
+            background: #111;
+            border: 1px dashed #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .ad-side {
+            height: 300px;
+            width: 100%;
+        }
+
+        .ad-bot {
+            height: 100px;
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        .more-box {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 5px;
+        }
+
+        .mini:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .mini-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-size: cover;
+            background-color: #333;
+        }
+
+        /* --- 11. MOBILE SPECIFIC --- */
+        .mob-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--bottom-nav-height);
+            background: #121216;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 500;
+            justify-content: space-around;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .mob-link {
+            color: #777;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mob-link.active {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .mob-icon {
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+        }
+
+        .mob-back {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: #fff;
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.2rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .mob-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 65px);
+            background: #0f0f13;
+            z-index: 400;
+            display: none;
+            flex-direction: column;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .mob-menu-overlay.active {
+            display: flex;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin: 0;
+                width: 100%;
+                padding: 20px;
+                padding-bottom: 90px;
+            }
+
+            .mob-nav {
+                display: flex;
+            }
+
+            .top-bar {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .search-container {
+                order: 2;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .top-actions {
+                display: flex;
+                order: 1;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .contact-btn {
+                padding: 8px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+            }
+
+            .contact-btn span.btn-text {
+                display: none;
+            }
+
+            .user-profile {
+                padding: 4px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+                min-width: 40px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                margin: 0;
+                font-size: 0.9rem;
+            }
+
+            .hero-banner {
+                height: 240px;
+                padding: 30px;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            #game-view.active .game-layout {
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+
+            #game-view.active .game-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+                padding-top: 0;
+                z-index: 9998;
+            }
+
+            #game-view.active .game-controls,
+            #game-view.active .side-col,
+            #game-view.active .ad-bot {
+                display: none;
+            }
+
+            #game-view.active .mob-back {
+                display: flex;
+            }
+
+            .mob-nav {
+                z-index: 500;
+            }
+        }
+    </style>
+</head>
+
+<body class="loading">
+
+    <div id="loader-wrapper">
+        <div class="loader-logo">ZYNOX</div>
+        <div class="loader-bar-bg">
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- CONTACT MODAL -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('contactModal')">✕</button>
+            <div class="modal-icon">📩</div>
+            <h2 class="modal-title">Get in Touch</h2>
+            <p class="modal-text">Found a bug or have a game suggestion? We'd love to hear from you!</p>
+            <a href="mailto:gameszynox@gmail.com" class="modal-email">gameszynox@gmail.com</a>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-box">
+            <button class="close-btn" onclick="closeModal('authModal')">✕</button>
+            <div class="auth-header">
+                <h2>ZYNOX ID</h2>
+                <p style="color:#888;font-size:0.9rem;">Login to save favorites & progress</p>
+            </div>
+            <div class="auth-tabs">
+                <span class="auth-tab active" onclick="switchAuthTab('login')">Log In</span>
+                <span class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</span>
+            </div>
+            <div id="authStatus" class="status-message"></div>
+            <div id="loginArea">
+                <div class="auth-form"><input type="text" id="lUser" placeholder="Username"><input type="password"
+                        id="lPass" placeholder="Password"><button class="auth-btn" onclick="login()">Log In</button>
+                </div>
+            </div>
+            <div id="signupArea" style="display:none;">
+                <div class="auth-form"><input type="text" id="sUser" placeholder="Choose Username"><span
+                        class="input-hint">3–16 characters</span><input type="password" id="sPass"
+                        placeholder="Choose Password"><span class="input-hint">Min 6 characters</span><button
+                        class="auth-btn" onclick="signup()">Create Account</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE SETTINGS MODAL -->
+    <div class="modal" id="profileModal">
+        <div class="box">
+            <span class="close" onclick="closeModal('profileModal')">✕</span>
+            <h2>My Profile</h2>
+            <div id="profMsg" class="status"></div>
+
+            <div class="auth-form" style="text-align:left;">
+                <!-- PFP UPLOAD -->
+                <div style="text-align:center; margin-bottom:15px;">
+                    <div id="previewPfp"
+                        style="width:80px; height:80px; border-radius:50%; background:#333; margin:0 auto 10px; background-size:cover; background-position:center;">
+                    </div>
+                    <label style="color:var(--accent-color); font-size:0.8rem; cursor:pointer; font-weight:bold;">
+                        Upload Picture
+                        <input type="file" id="pfpInput" accept="image/*" style="display:none;"
+                            onchange="previewFile()">
+                    </label>
+                </div>
+
+                <label style="color:#888;font-size:0.8rem;margin-bottom:5px;display:block;">Username</label>
+                <input type="text" id="editUser" placeholder="New Username">
+
+                <label style="color:#888;font-size:0.8rem;margin-bottom:5px;display:block;">New Password</label>
+                <input type="password" id="editPass" placeholder="New Password (min 6 chars)">
+
+                <button class="auth-btn" onclick="updateProfile()">Save Changes</button>
+                <button class="auth-btn" style="background:#ff4757; margin-top:10px;" onclick="logout()">Log
+                    Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand-container" onclick="showHome()">
+            <div class="logo">ZYNOX</div>
+            <div class="tagline">Best Unblocked Games</div>
+            <div class="credits" style="font-size:0.6rem; color:#555; font-weight:600; margin-top:4px;">Developed by
+                Olibro and Danibro</div>
+        </div>
+        <div class="menu-category">Menu</div>
+        <ul class="nav-links">
+            <li class="nav-item"><a onclick="filterCat('all')" class="nav-link active" id="l-all"><span
+                        class="icon">🏠</span> Home</a></li>
+            <li class="nav-item"><a onclick="filterCat('trending')" class="nav-link" id="l-trending"><span
+                        class="icon">🔥</span> Trending</a></li>
+            <li class="nav-item"><a onclick="filterCat('favorites')" class="nav-link" id="l-favorites"><span
+                        class="icon">⭐</span> Favorites</a></li>
+        </ul>
+
+        <!-- SIDEBAR AD -->
+        <div class="ad-placeholder ad-sidebar-bottom">ADVERTISEMENT</div>
+
+        <div class="menu-category">Categories</div>
+        <ul class="nav-links">
+            <li class="nav-item"><a onclick="filterCat('action')" class="nav-link" id="l-action"><span
+                        class="icon">⚔️</span> Action</a></li>
+            <li class="nav-item"><a onclick="filterCat('horror')" class="nav-link" id="l-horror"><span
+                        class="icon">👻</span> Horror</a></li>
+            <li class="nav-item"><a onclick="filterCat('puzzle')" class="nav-link" id="l-puzzle"><span
+                        class="icon">🧩</span> Puzzle</a></li>
+            <li class="nav-item"><a onclick="filterCat('2player')" class="nav-link" id="l-2player"><span
+                        class="icon">👥</span> 2 Player</a></li>
+            <li class="nav-item"><a onclick="filterCat('multiplayer')" class="nav-link" id="l-multiplayer"><span
+                        class="icon">🌐</span> Multiplayer</a></li>
+            <li class="nav-item"><a onclick="filterCat('madebydevs')" class="nav-link" id="l-madebydevs"><span
+                        class="icon">💻</span> Made by Devs</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HOME VIEW -->
+        <div id="home-view">
+            <div class="top-bar">
+                <div class="search-container"><span class="search-icon">🔍</span><input type="text" id="gameSearch"
+                        class="search-input" placeholder="Search for games..." onkeyup="doSearch()"></div>
+                <div class="top-actions">
+                    <div class="contact-btn" onclick="openModal('contactModal')"><span>✉</span> <span
+                            class="btn-text">Contact</span></div>
+                    <div class="user-profile" id="uProf" onclick="checkAuth()">
+                        <div class="user-avatar" id="uAv">?</div>
+                        <div class="user-info">
+                            <span class="user-name" id="uName">Guest</span>
+                            <span class="level-badge" id="uLevel">LVL 1</span>
+                            <div class="xp-container">
+                                <div class="xp-bar" id="uXpBar"></div>
+                            </div>
+                            <span class="user-status" id="uStat">Sign In</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP AD BANNER -->
+            <div class="ad-placeholder ad-banner">ADVERTISEMENT</div>
+
+            <!-- FEATURED GAME: BASKET RANDOM -->
+            <div class="hero-banner" id="hero">
+                <span class="hero-badge">Featured Game</span>
+                <div class="hero-content">
+                    <h1>BASKET RANDOM</h1>
+                    <p>Crazy physics, random fun! Challenge a friend or the CPU in this hilarious basketball game.</p>
+                    <div class="hero-play-btn" onclick="playGame('Basket Random', 'basket-random.html', '2player')">PLAY
+                        NOW</div>
+                </div>
+            </div>
+
+            <div class="section-header" id="recentHead" style="display:none;">
+                <h2 class="section-title">⏱ Recently Played</h2>
+            </div>
+            <div class="game-grid" id="recentGrid" style="display:none; margin-bottom: 30px;"></div>
+
+            <div class="section-header">
+                <h2 class="section-title" id="secTitle">Recommended For You</h2><span class="see-all"
+                    onclick="filterCat('all')">See All</span>
+            </div>
+
+            <div class="game-grid" id="grid">
+                <!-- *** DINA SPEL (MED LOCAL LINKS) *** -->
+                <div class="game-card"
+                    onclick="playGame('Super Mario World', 'supermario-world.html', 'action trending')"
+                    data-cat="action trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('supermario-world.png'); background-color:#e60012;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Super Mario World</div>
+                        <div class="game-meta"><span>Action</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Granny', 'granny.html', 'horror trending')"
+                    data-cat="horror trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('granny.png'); background-color:#222;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Granny</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Granny 2', 'granny2.html', 'horror trending')"
+                    data-cat="horror trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('granny2.png'); background-color:#222;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Granny 2</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="playGame('FNAF 1', 'fnaf.html', 'horror trending')"
+                    data-cat="horror trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('fnaf.png'); background-color:#000;"></div>
+                    <div class="card-content">
+                        <div class="game-name">FNAF 1</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('FNAF 2', 'fnaf2.html', 'horror')" data-cat="horror">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('fnaf2.png'); background-color:#000;"></div>
+                    <div class="card-content">
+                        <div class="game-name">FNAF 2</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('FNAF 3', 'fnaf3.html', 'horror')" data-cat="horror">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('fnaf3.png'); background-color:#000;"></div>
+                    <div class="card-content">
+                        <div class="game-name">FNAF 3</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('FNAF 4', 'fnaf4.html', 'horror')" data-cat="horror">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('fnaf4.png'); background-color:#000;"></div>
+                    <div class="card-content">
+                        <div class="game-name">FNAF 4</div>
+                        <div class="game-meta"><span>Horror</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Steel Fury', 'steel-fury.html', 'madebydevs')"
+                    data-cat="madebydevs">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('steel-fury.png'); background-color:#566d43;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Steel Fury</div>
+                        <div class="game-meta"><span>Devs</span><span class="play-tag">Play</span></div>
+                        <div class="dev-badge"><span class="dev-highlight">Dev: Olibro</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('1v1.LOL', '1v1-lol.html', 'action multiplayer')"
+                    data-cat="action multiplayer">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('1v1lol.png'); background-color:#ff3333;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">1v1.LOL</div>
+                        <div class="game-meta"><span>Action</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+
+                <!-- IN-GRID AD -->
+                <div class="ad-placeholder ad-card-style" style="display:none;" id="gridAd">ADVERTISEMENT</div>
+
+                <div class="game-card" onclick="playGame('Basket Random', 'basket-random.html', '2player')"
+                    data-cat="2player">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('basketrandom.png'); background-color:#f1c40f;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Basket Random</div>
+                        <div class="game-meta"><span>2 Player</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Soccer Random', 'soccer-random.html', '2player')"
+                    data-cat="2player">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('soccer-random.png'); background-color:#2ecc71;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Soccer Random</div>
+                        <div class="game-meta"><span>2 Player</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Boxing Random', 'boxing-random.html', '2player')"
+                    data-cat="2player">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('boxing-random.png'); background-color:#e67e22;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Boxing Random</div>
+                        <div class="game-meta"><span>2 Player</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Smash Karts', 'smash-karts.html', 'multiplayer action')"
+                    data-cat="multiplayer action">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('smashkarts.png'); background-color:#ff4757;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Smash Karts</div>
+                        <div class="game-meta"><span>Multiplayer</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Fall Guys', 'fallguys.html', 'multiplayer action')"
+                    data-cat="multiplayer action">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('fallguys.png'); background-color:#ff69b4;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Fall Guys</div>
+                        <div class="game-meta"><span>Party</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Geometry Dash', 'geometry-dash.html', 'action trending')"
+                    data-cat="action trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('geometry-dash.png'); background-color:#ffff00;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Geometry Dash</div>
+                        <div class="game-meta"><span>Rhythm</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Subway Surfers', 'subway-surfers.html', 'action')"
+                    data-cat="action">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('subway-surfers.png'); background-color:#ffcc00;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Subway Surfers</div>
+                        <div class="game-meta"><span>Runner</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Pacman', 'pacman.html', 'action trending')"
+                    data-cat="action trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('pacman.png'); background-color:#ffd700;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Pacman</div>
+                        <div class="game-meta"><span>Arcade</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Block Puzzle', 'block-puzzle.html', 'puzzle')"
+                    data-cat="puzzle">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image"
+                        style="background-image: url('block-puzzle.png'); background-color:#ff9966;"></div>
+                    <div class="card-content">
+                        <div class="game-name">Block Puzzle</div>
+                        <div class="game-meta"><span>Puzzle</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Polytrack', 'polytrack.html', 'action multiplayer')"
+                    data-cat="multiplayer action">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('polytrack.png'); background-color:#55efc4;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Polytrack</div>
+                        <div class="game-meta"><span>Racing</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('Snow Rider', 'snowrider.html', 'action trending')"
+                    data-cat="action trending">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background-image: url('snowrider.png'); background-color:#74b9ff;">
+                    </div>
+                    <div class="card-content">
+                        <div class="game-name">Snow Rider</div>
+                        <div class="game-meta"><span>Action</span><span class="play-tag">Play</span></div>
+                    </div>
+                </div>
+                <a href="#" class="game-card" style="opacity: 0.7;" data-cat="action">
+                    <div class="favorite-star" onclick="toggleFav(event, this)">★</div>
+                    <div class="card-image" style="background: linear-gradient(135deg, #56ab2f, #a8e063);"></div>
+                    <div class="card-content">
+                        <div class="game-name">Minecraft Classic</div>
+                        <div class="game-meta"><span>Creative</span><span class="play-tag">Soon</span></div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- BOTTOM AD BANNER -->
+            <div class="ad-placeholder ad-banner">ADVERTISEMENT</div>
+        </div>
+
+        <!-- GAME VIEW -->
+        <div id="game-view">
+            <div class="mob-back" onclick="closeGame()">✕</div>
+            <div class="top-bar" style="margin-bottom:10px;">
+                <div onclick="closeGame()"
+                    style="cursor:pointer;font-weight:bold;color:#ccc;display:flex;align-items:center;gap:5px;">⬅ Back
+                    to Home</div>
+            </div>
+            <div class="game-layout">
+                <div class="game-col">
+                    <div class="game-container" id="gameCont"><iframe id="gameFrame" src="" allowfullscreen></iframe>
+                    </div>
+                    <div class="game-controls">
+                        <div>
+                            <h1 id="gTitle" style="font-size:1.4rem;font-weight:800;color:white;">Title</h1>
+                            <p id="gCat" style="color:#888;font-size:0.9rem;">Category</p>
+                        </div><button class="fs-btn" onclick="toggleFS()">⛶ Fullscreen</button>
+                    </div>
+                    <!-- GAME BOTTOM AD -->
+                    <div class="ad-placeholder ad-banner">ADVERTISEMENT</div>
+                </div>
+                <div class="side-col">
+                    <!-- GAME SIDE AD -->
+                    <div class="ad-placeholder ad-side-rectangle">ADVERTISEMENT</div>
+                    <div class="more-box">
+                        <h3
+                            style="color:#ddd;margin-bottom:15px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;font-size:1rem;">
+                            More Games</h3>
+                        <div id="miniGames"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MOBILE MENU -->
+    <div class="mob-menu-overlay" id="mobMenu">
+        <h2 style="color:white;margin-bottom:20px;">Categories</h2>
+        <a onclick="filterCat('action');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">⚔️</span> Action</a>
+        <a onclick="filterCat('horror');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">👻</span> Horror</a>
+        <a onclick="filterCat('puzzle');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">🧩</span> Puzzle</a>
+        <a onclick="filterCat('2player');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">👥</span> 2 Player</a>
+        <a onclick="filterCat('multiplayer');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">🌐</span> Multiplayer</a>
+        <a onclick="filterCat('madebydevs');toggleMobMenu()" class="nav-link"
+            style="font-size:1.3rem;margin-bottom:15px;"><span class="icon">💻</span> Devs</a>
+        <div style="margin-top:40px;color:var(--error-color);cursor:pointer;font-weight:bold;text-align:center;font-size:1.2rem;"
+            onclick="toggleMobMenu()">Close Menu</div>
+    </div>
+
+    <!-- MOBILE NAV -->
+    <div class="mob-nav">
+        <a onclick="showHome()" class="mob-link active"><span class="mob-icon">🏠</span>Home</a>
+        <a onclick="filterCat('trending')" class="mob-link"><span class="mob-icon">🔥</span>Hot</a>
+        <a onclick="filterCat('favorites')" class="mob-link"><span class="mob-icon">⭐</span>Favs</a>
+        <a onclick="toggleMobMenu()" class="mob-link"><span class="mob-icon">☰</span>Menu</a>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        window.onload = function () {
+            setTimeout(() => { document.getElementById('loader-wrapper').style.opacity = '0'; document.getElementById('loader-wrapper').style.visibility = 'hidden'; document.body.classList.remove('loading'); }, 800);
+            var sess = localStorage.getItem('zynoxSess'); if (sess) { var u = JSON.parse(localStorage.getItem('zynoxUsers') || '[]').find(x => x.u === sess); if (u) login(u); }
+            renderRecent();
+
+            // Visa in-grid ad
+            var grid = document.getElementById('grid');
+            var ad = document.getElementById('gridAd');
+            if (grid && ad && grid.children.length > 8) {
+                ad.style.display = 'flex';
+                grid.insertBefore(ad, grid.children[8]);
+            }
+        }
+
+        let currUser = null;
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); if (id === 'authModal') clearStatus(); }
+        function checkAuth() {
+            if (!currUser) openModal('authModal');
+            else {
+                document.getElementById('editUser').value = currUser.u;
+                // Visa befintlig PFP om den finns i modalen
+                if (currUser.pfp) {
+                    document.getElementById('previewPfp').style.backgroundImage = `url(${currUser.pfp})`;
+                    document.getElementById('previewPfp').innerText = '';
+                } else {
+                    document.getElementById('previewPfp').style.backgroundImage = '';
+                    document.getElementById('previewPfp').innerText = 'No Img';
+                }
+                openModal('profileModal');
+            }
+        }
+        function setAuth(m) {
+            document.getElementById('loginArea').style.display = m === 'login' ? 'block' : 'none';
+            document.getElementById('signupArea').style.display = m === 'signup' ? 'block' : 'none';
+            document.querySelectorAll('.auth-tab')[0].classList.toggle('active', m === 'login');
+            document.querySelectorAll('.auth-tab')[1].classList.toggle('active', m === 'signup');
+            clearStatus();
+        }
+        function showMsg(t, type) { var b = document.getElementById('authStatus'); b.innerText = t; b.className = 'status-message ' + (type ? 'status-success' : 'status-error'); b.style.display = 'block'; }
+        function clearStatus() { document.getElementById('authStatus').style.display = 'none'; }
+        function switchAuthTab(t) { setAuth(t); }
+
+        // PFP PREVIEW
+        function previewFile() {
+            const file = document.getElementById('pfpInput').files[0];
+            const preview = document.getElementById('previewPfp');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.style.backgroundImage = `url(${e.target.result})`;
+                    preview.innerText = '';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function signup() {
+            let u = document.getElementById('sUser').value.trim(), p = document.getElementById('sPass').value.trim();
+            if (u.length < 3 || u.length > 16) return showMsg('Username 3-16 chars', 0);
+            if (p.length < 6) return showMsg('Password min 6 chars', 0);
+            let db = JSON.parse(localStorage.getItem('zynoxUsers') || '[]');
+            if (db.some(x => x.u.toLowerCase() === u.toLowerCase())) return showMsg('Username already exists', 0);
+            let nu = { u: u, p: p, favs: [], recent: [], xp: 0, lvl: 1, pfp: null }; db.push(nu); localStorage.setItem('zynoxUsers', JSON.stringify(db));
+            showMsg('Account created successfully', 1); setTimeout(() => { login(nu); localStorage.setItem('zynoxSess', u); closeModal('authModal'); }, 1000);
+        }
+        function login(user) {
+            if (!user) {
+                let u = document.getElementById('lUser').value.trim(), p = document.getElementById('lPass').value.trim();
+                let db = JSON.parse(localStorage.getItem('zynoxUsers') || '[]');
+                user = db.find(x => x.u.toLowerCase() === u.toLowerCase() && x.p === p);
+                if (!user) return showMsg('Wrong password', 0);
+                localStorage.setItem('zynoxSess', user.u);
+            }
+            currUser = user;
+            if (!currUser.xp) currUser.xp = 0; if (!currUser.lvl) currUser.lvl = 1;
+            document.getElementById('uProf').classList.add('logged-in');
+
+            // Sätt PFP eller Initial
+            const av = document.getElementById('uAv');
+            if (user.pfp) {
+                av.innerText = '';
+                av.style.backgroundImage = `url(${user.pfp})`;
+                av.style.color = 'transparent';
+            } else {
+                av.style.backgroundImage = '';
+                av.style.color = '#fff';
+                av.innerText = user.u[0].toUpperCase();
+            }
+
+            document.getElementById('uName').innerText = user.u;
+            document.getElementById('uStat').innerText = 'Online';
+            updateXPUI();
+            closeModal('authModal'); renderFavs(); renderRecent();
+        }
+        function logout() {
+            currUser = null; localStorage.removeItem('zynoxSess');
+            document.getElementById('uProf').classList.remove('logged-in');
+            document.getElementById('uAv').style.backgroundImage = '';
+            document.getElementById('uAv').style.color = '#aaa';
+            document.getElementById('uAv').innerText = '?';
+            document.getElementById('uName').innerText = 'Guest';
+            document.getElementById('uStat').innerText = 'Sign In';
+            renderFavs(); renderRecent(); filterCat('all');
+            closeModal('profileModal');
+        }
+
+        function updateXPUI() {
+            if (!currUser) return;
+            let nxt = currUser.lvl * 100;
+            let pct = (currUser.xp / nxt) * 100;
+            document.getElementById('uXpBar').style.width = pct + '%';
+            document.getElementById('uLevel').innerText = 'LVL ' + currUser.lvl;
+        }
+        function giveXP(amt) {
+            if (!currUser) return;
+            currUser.xp += amt;
+            let nxt = currUser.lvl * 100;
+            if (currUser.xp >= nxt) { currUser.xp -= nxt; currUser.lvl++; }
+            updateXPUI(); updateDB();
+        }
+
+        function updateProfile() {
+            let newU = document.getElementById('editUser').value.trim();
+            let newP = document.getElementById('editPass').value.trim();
+            let fileInput = document.getElementById('pfpInput');
+            let msgBox = document.getElementById('profMsg');
+
+            // Validations if fields are filled
+            if (newU && (newU.length < 3 || newU.length > 16)) {
+                msgBox.innerText = 'Username 3-16 chars'; msgBox.className = 'status err'; msgBox.style.display = 'block'; return;
+            }
+            if (newP && newP.length < 6) {
+                msgBox.innerText = 'Password min 6 chars'; msgBox.className = 'status err'; msgBox.style.display = 'block'; return;
+            }
+
+            let db = JSON.parse(localStorage.getItem('zynoxUsers') || '[]');
+
+            // Check dupes
+            if (newU && newU.toLowerCase() !== currUser.u.toLowerCase() && db.some(x => x.u.toLowerCase() === newU.toLowerCase())) {
+                msgBox.innerText = 'Username already exists'; msgBox.className = 'status err'; msgBox.style.display = 'block'; return;
+            }
+
+            const saveChanges = (base64Img) => {
+                let idx = db.findIndex(x => x.u === currUser.u);
+                if (idx !== -1) {
+                    if (newU) db[idx].u = newU;
+                    if (newP) db[idx].p = newP;
+                    if (base64Img) db[idx].pfp = base64Img;
+
+                    // Update current session object
+                    currUser = db[idx];
+
+                    localStorage.setItem('zynoxUsers', JSON.stringify(db));
+                    if (newU) localStorage.setItem('zynoxSess', newU);
+
+                    // UI Updates
+                    if (newU) document.getElementById('uName').innerText = newU;
+                    if (base64Img) {
+                        const av = document.getElementById('uAv');
+                        av.innerText = '';
+                        av.style.backgroundImage = `url(${base64Img})`;
+                        av.style.color = 'transparent';
+                    }
+
+                    msgBox.innerText = 'Profile Updated!'; msgBox.className = 'status succ'; msgBox.style.display = 'block';
+                    setTimeout(() => closeModal('profileModal'), 1000);
+                }
+            };
+
+            // Handle Image Upload First
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    saveChanges(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveChanges(null); // No image change
+            }
+        }
+
+        function toggleFav(e, el) {
+            e.preventDefault(); e.stopPropagation();
+            if (!currUser) { alert("Login to save favorites!"); return openModal('authModal'); }
+            let card = el.closest('.game-card'), name = card.querySelector('.game-name').innerText;
+            let idx = currUser.favs.indexOf(name);
+            if (idx === -1) { currUser.favs.push(name); card.classList.add('favorited'); }
+            else { currUser.favs.splice(idx, 1); card.classList.remove('favorited'); }
+            updateDB();
+        }
+        function addToRecent(name) {
+            let r = currUser ? currUser.recent : JSON.parse(localStorage.getItem('zRec') || '[]');
+            r = r.filter(g => g !== name); r.unshift(name); if (r.length > 4) r.pop();
+            if (currUser) { currUser.recent = r; updateDB(); } else { localStorage.setItem('zRec', JSON.stringify(r)); }
+        }
+        function updateDB() {
+            if (!currUser) return;
+            let db = JSON.parse(localStorage.getItem('zynoxUsers') || '[]');
+            let idx = db.findIndex(x => x.u.toLowerCase() === currUser.u.toLowerCase());
+            if (idx !== -1) { db[idx] = currUser; localStorage.setItem('zynoxUsers', JSON.stringify(db)); }
+            renderFavs();
+        }
+        function renderFavs() {
+            document.querySelectorAll('.game-card').forEach(c => c.classList.remove('favorited'));
+            if (currUser) currUser.favs.forEach(n => {
+                let cards = document.querySelectorAll('.game-card');
+                cards.forEach(c => { if (c.querySelector('.game-name').innerText === n) c.classList.add('favorited'); });
+            });
+        }
+        function renderRecent() {
+            const g = document.getElementById('recentGrid'); const h = document.getElementById('recentHead');
+            let r = currUser ? currUser.recent : JSON.parse(localStorage.getItem('zRec') || '[]');
+            g.innerHTML = '';
+            if (!r || r.length === 0) { h.style.display = 'none'; g.style.display = 'none'; return; }
+            h.style.display = 'flex'; g.style.display = 'grid';
+            r.forEach(n => {
+                let cards = Array.from(document.querySelectorAll('#grid .game-card'));
+                let original = cards.find(c => c.querySelector('.game-name').innerText === n);
+                if (original) {
+                    let clone = original.cloneNode(true);
+                    clone.onclick = original.onclick;
+                    g.appendChild(clone);
+                }
+            });
+        }
+
+        function showHome() {
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('game-view').classList.remove('active');
+            document.getElementById('gameFrame').src = '';
+            renderRecent(); filterCat('all');
+        }
+        function playGame(t, u, c) {
+            addToRecent(t);
+            giveXP(20);
+            document.getElementById('mobMenu').classList.remove('active');
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('game-view').style.display = 'flex';
+            document.getElementById('game-view').classList.add('active');
+            document.getElementById('gTitle').innerText = t;
+            document.getElementById('gCat').innerText = c;
+            document.getElementById('gameFrame').src = u;
+
+            let miniHTML = ''; let count = 0;
+            document.querySelectorAll('#grid .game-card').forEach(card => {
+                if (count < 4 && card.querySelector('.game-name').innerText !== t) {
+                    let name = card.querySelector('.game-name').innerText;
+                    let img = card.querySelector('.card-image').style.backgroundImage;
+                    let cUrl = card.getAttribute('onclick').match(/'([^']+)'/g)[1].replace(/'/g, "");
+                    let cCat = card.getAttribute('data-cat');
+                    miniHTML += `<div class="mini" onclick="playGame('${name}', '${cUrl}', '${cCat}')"><div class="mini-img" style="background-image:${img}"></div><div class="info"><h4>${name}</h4><span style="font-size:0.7rem;color:#6c5ce7">Play</span></div></div>`;
+                    count++;
+                }
+            });
+            document.getElementById('miniGames').innerHTML = miniHTML;
+            window.scrollTo(0, 0);
+        }
+        function closeGame() { showHome(); }
+        function toggleFS() { let e = document.getElementById("gameCont"); if (!document.fullscreenElement) { if (e.requestFullscreen) e.requestFullscreen(); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+        function toggleMobMenu() { document.getElementById('mobMenu').classList.toggle('active'); }
+
+        function filterCat(c) {
+            let hero = document.getElementById('hero'), t = document.getElementById('secTitle'), s = document.querySelector('.see-all'), rHead = document.getElementById('recentHead'), rGrid = document.getElementById('recentGrid');
+            document.querySelectorAll('.nav-link, .mob-link').forEach(l => l.classList.remove('active'));
+            let a = document.getElementById('l-' + c) || document.getElementById('l-all'); if (a) a.classList.add('active');
+            let cards = document.querySelectorAll('#grid .game-card');
+
+            if (c === 'all') {
+                hero.style.display = 'flex'; t.innerText = 'Recommended For You'; s.style.display = 'block';
+                cards.forEach(x => x.style.display = ''); renderRecent();
+            } else {
+                hero.style.display = 'none';
+                if (rHead) rHead.style.display = 'none'; if (rGrid) rGrid.style.display = 'none';
+                if (c === 'favorites') {
+                    t.innerText = 'My Favorites'; s.style.display = 'none';
+                    let hasFav = false;
+                    cards.forEach(x => { if (x.classList.contains('favorited')) { x.style.display = ''; hasFav = true; } else x.style.display = 'none'; });
+                    if (!hasFav && currUser) t.innerText = 'No Favorites Yet';
+                    if (!currUser) t.innerText = 'Login to see Favorites';
+                } else {
+                    let txt = c.charAt(0).toUpperCase() + c.slice(1);
+                    if (c === '2player') txt = '2 Player'; if (c === 'madebydevs') txt = 'Made by Devs';
+                    t.innerText = txt + ' Games'; s.style.display = 'none';
+                    cards.forEach(x => x.style.display = (x.getAttribute('data-cat').includes(c)) ? '' : 'none');
+                }
+            }
+            document.getElementById('gameSearch').value = '';
+        }
+        function doSearch() {
+            let v = document.getElementById('gameSearch').value.toUpperCase();
+            if (v) { document.getElementById('hero').style.display = 'none'; document.getElementById('recentHead').style.display = 'none'; document.getElementById('recentGrid').style.display = 'none'; } else { document.getElementById('hero').style.display = 'flex'; renderRecent(); }
+            document.querySelectorAll('#grid .game-card').forEach(c => { c.style.display = (c.querySelector('.game-name').innerText.toUpperCase().includes(v)) ? '' : 'none'; });
+        }
+        document.getElementById('gameSearch').addEventListener("keypress", function (e) { if (e.key === "Enter") { e.preventDefault(); var c = document.querySelectorAll('#grid .game-card'); for (var i = 0; i < c.length; i++) { if (c[i].style.display !== 'none') { c[i].click(); break; } } } });
+        document.getElementById('contactModal').addEventListener('click', function (e) { if (e.target === this) closeModal('contactModal'); });
+    </script>
+</body>
+
+</html>
